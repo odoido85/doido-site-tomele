@@ -194,6 +194,13 @@ export default function Home() {
                   setTimeRemaining(1800) // Reset timer
                   setAppState("pix-payment")
                   
+                  // Log do QR code gerado
+                  console.log("[v0] PIX transaction created successfully:")
+                  console.log("[v0] Transaction ID:", pixResult.transactionId)
+                  console.log("[v0] PIX Code:", pixResult.pixCode)
+                  console.log("[v0] QR Code Image:", pixResult.qrCodeImage)
+                  console.log("[v0] Amount:", pixResult.amount)
+                  
                   // Disparar evento Purchase do Facebook Pixel
                   trackPurchase(263.23, 'BRL')
                 } else {
@@ -468,11 +475,21 @@ export default function Home() {
 
               <div className="flex flex-col items-center mb-6">
                 <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
-                  <img
-                    src={pixData?.qrCodeImage || `/placeholder.svg?height=200&width=200&query=QR Code PIX`}
-                    alt="QR Code PIX"
-                    className="w-48 h-48"
-                  />
+                  {pixData?.qrCodeImage ? (
+                    <img
+                      src={pixData.qrCodeImage}
+                      alt="QR Code PIX"
+                      className="w-48 h-48"
+                      onError={(e) => {
+                        console.log("[v0] QR Code image failed to load, using fallback")
+                        e.currentTarget.src = `/placeholder.svg?height=200&width=200&query=QR Code PIX`
+                      }}
+                    />
+                  ) : (
+                    <div className="w-48 h-48 bg-gray-100 flex items-center justify-center rounded">
+                      <span className="text-gray-500 text-sm">QR Code não disponível</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="w-full max-w-md">
@@ -1407,7 +1424,7 @@ export default function Home() {
             <div className="space-y-4">
               <div>
                 <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-2">
-                  Digite Seu CPF
+                  <span className="text-red-500">*</span> Digite Seu CPF:
                 </label>
                 <Input
                   id="cpf"
@@ -1422,7 +1439,7 @@ export default function Home() {
 
               <div>
                 <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 mb-2">
-                  Digite sua data de nascimento
+                  <span className="text-red-500">*</span> Digite sua data de nascimento:
                 </label>
                 <Input
                   id="birthDate"
@@ -1437,7 +1454,7 @@ export default function Home() {
 
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Digite seu telefone <span className="text-red-500">*</span>
+                  <span className="text-red-500">*</span> Digite seu telefone:
                 </label>
                 <Input
                   id="phone"

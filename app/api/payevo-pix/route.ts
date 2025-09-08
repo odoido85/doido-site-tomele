@@ -152,10 +152,21 @@ export async function POST(request: NextRequest) {
     // Calcular tempo de expiração (30 minutos se não especificado)
     const expiresAt = expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString()
 
+    // Gerar QR Code usando API online (sem dependências)
+    let qrCodeImage = null
+    try {
+      // Usar API gratuita para gerar QR code
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(pixCode)}`
+      qrCodeImage = qrApiUrl
+      console.log("[v0] QR Code URL generated successfully:", qrApiUrl)
+    } catch (qrError) {
+      console.log("[v0] Error generating QR Code URL:", qrError)
+    }
+
     return NextResponse.json({
       success: true,
       pixCode: pixCode,
-      qrCodeImage: null, // PayEvo fornece URL do QR code, não imagem base64
+      qrCodeImage: qrCodeImage,
       amount: finalAmount,
       transactionId: transactionId,
       expiresAt: expiresAt,
