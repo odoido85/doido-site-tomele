@@ -43,23 +43,6 @@ export default function Home() {
   const [pixData, setPixData] = useState<any>(null)
   const [timeRemaining, setTimeRemaining] = useState(1800) // 30 minutes in seconds
 
-  // Funções de tracking do Facebook Pixel
-  const trackPageView = () => {
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'PageView')
-      console.log('[v0] Facebook Pixel: PageView tracked')
-    }
-  }
-
-  const trackPurchase = (value: number, currency: string = 'BRL') => {
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'Purchase', {
-        value: value,
-        currency: currency
-      })
-      console.log('[v0] Facebook Pixel: Purchase tracked', { value, currency })
-    }
-  }
 
   useEffect(() => {
     // Verificar se é dispositivo mobile
@@ -107,8 +90,6 @@ export default function Home() {
     // Executar na montagem do componente
     updateURL()
 
-    // Disparar PageView do Facebook Pixel
-    trackPageView()
 
     // Prevenir navegação para trás (opcional)
     const handlePopState = (event: PopStateEvent) => {
@@ -201,8 +182,6 @@ export default function Home() {
                   console.log("[v0] QR Code Image:", pixResult.qrCodeImage)
                   console.log("[v0] Amount:", pixResult.amount)
                   
-                  // Disparar evento Purchase do Facebook Pixel
-                  trackPurchase(263.23, 'BRL')
                 } else {
                   alert("Erro ao gerar PIX. Tente novamente.")
                   setAppState("darf")
