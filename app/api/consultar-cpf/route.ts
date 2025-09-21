@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
   try {
-    const { cpf, birthDate } = await request.json()
+    const { cpf, birthDate, phone } = await request.json()
 
     if (!cpf) {
       return NextResponse.json({ success: false, error: "CPF é obrigatório" }, { status: 400 })
@@ -12,16 +12,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Data de nascimento é obrigatória" }, { status: 400 })
     }
 
+    if (!phone) {
+      return NextResponse.json({ success: false, error: "Telefone é obrigatório" }, { status: 400 })
+    }
+
     // Remove formatação do CPF (pontos e traços)
     const cpfLimpo = cpf.replace(/[.-]/g, "")
 
     try {
-      console.log("[v0] Tentando API CPFHub.io para CPF:", cpfLimpo, "Data:", birthDate)
+      console.log("[v0] Tentando API CPFHub.io para CPF:", cpfLimpo, "Data:", birthDate, "Telefone:", phone)
 
       const response = await fetch("https://api.cpfhub.io/api/cpf", {
         method: "POST",
         headers: {
-          "x-api-key": "da13dd64e06cd803bb27f341bdab2ccacf9ff39cfc5989fcfdb6980e675ad748",
+          "x-api-key": "70bd0aed73362d36b0856de50efdadf2eb1fd65bae8779e6307fa573a9f3f1a9",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -60,7 +64,7 @@ export async function POST(request: NextRequest) {
       console.log("[v0] API CPFHub.io falhou, tentando API GitHub:", cpfhubError)
 
       try {
-        console.log("[v0] Tentando API gratuita do GitHub para CPF:", cpfLimpo)
+        console.log("[v0] Tentando API gratuita do GitHub para CPF:", cpfLimpo, "Telefone:", phone)
 
         const githubApiUrl = `https://api-receita-cpf.herokuapp.com/cpf/${cpfLimpo}/?format=json`
 
